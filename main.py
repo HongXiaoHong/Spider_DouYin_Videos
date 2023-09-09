@@ -1,12 +1,13 @@
 import json
-import requests
-import time
 import os
+import time
 import urllib.request
-import argparse
 
-from tools.util import get_current_time_format, generate_url_with_xbs, sleep_random
+import requests
+
 from config import IS_SAVE, SAVE_FOLDER, USER_SEC_UID, IS_WRITE_TO_CSV, LOGIN_COOKIE, CSV_FILE_NAME
+from tools.util import get_current_time_format, generate_url_with_xbs, sleep_random, fix_video_desc, \
+    fix_title_video_publish_time
 
 
 class DouYinUtil(object):
@@ -130,5 +131,8 @@ if __name__ == '__main__':
     all_video_list = dy_util.get_all_videos()
     for video_id in all_video_list:
         video_info = dy_util.get_video_detail_info(video_id)
+        # 文件名使用 上传时间_文件描述
+        video_title = video_info["title"]
+        publish_time = video_info["publish_time"]
         if video_info['is_video'] is True:
-            dy_util.download_video(video_info['link'], f"{video_id}.mp4")
+            dy_util.download_video(video_info['link'], f"{fix_title_video_publish_time(publish_time)}_{fix_video_desc(video_title)}.mp4")
